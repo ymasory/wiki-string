@@ -14,8 +14,8 @@ object SAXHandler extends DefaultHandler {
     
 
   var tagCount = 0
-  var maxTags  = 10000000
-  // var maxTags  = Integer.MAX_VALUE
+  // var maxTags  = 10000000
+  var maxTags  = Integer.MAX_VALUE
 
   var redirect: Boolean = false
   var curValue: String  = null
@@ -54,7 +54,8 @@ object SAXHandler extends DefaultHandler {
       if (redirect == false)
         if (curTitle != null)
           if (curText != null) {
-            writer write (curTitle + "\t" + curText + "\n")
+            if (curTitle.startsWith("Wikipedia:") == false)
+              writer write (curTitle + "\t" + curText + "\n")
           }
 
     if (qName == "redirect")   redirect = true
