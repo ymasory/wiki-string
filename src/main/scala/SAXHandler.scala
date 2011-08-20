@@ -7,59 +7,63 @@ import org.xml.sax.helpers.DefaultHandler
 //A Wikipedia English dump is 32+ GB
 object SAXHandler extends DefaultHandler {
 
+  //START DEBUG
+  var tagCount = 0
+  // var maxTags  = 10000000
+  var maxTags  = Integer.MAX_VALUE
+  //END DEBUG
+
   var writer =
     new java.io.BufferedWriter(
       new java.io.FileWriter(
         new java.io.File(Main.outLoc)))
     
 
-  var tagCount = 0
-  // var maxTags  = 10000000
-  var maxTags  = Integer.MAX_VALUE
+  var curValue: StringBuffer  = null
 
   var redirect: Boolean = false
-  var curValue: String  = null
   var curTitle: String  = null
   var curText: String   = null
 
   override def endDocument() = cleanup
 
-  private def cleanup() {
-    writer flush()
-    writer close()
-  }
 
   override def startElement(uri: String, lName: String, qName: String,
                             attrs: Attributes) {
+    //START DEBUG
     tagCount += 1
     if (tagCount > maxTags) {
       println(tagCount + " tags reached")
       cleanup()
       sys.exit(0)
     }
-    if (qName == "page") {                              
-      redirect = false
-      curValue = null
-      curTitle = null
-      curText  = null
-    }
+    //END DEBUG
+    
+    if (qName == "page") redirect = false
+    if (qName == "title" || qName == "text") curValue = new StringBuffer 
   }
 
-  override def characters(ch: Array[Char], start: Int, len: Int) {
-    curValue = new String(ch, start, len)
-  }
+
+  override def characters(ch: Array[Char], start: Int, len: Int) =
+    if (curValue != null) curValue append (ch, start, len)
+
 
   override def endElement(uri: String, lName: String, qName: String) {
     if (qName == "page")
       if (redirect == false)
         if (curTitle != null)
-          if (curText != null) {
+          if (curText != null)
             if (curTitle.startsWith("Wikipedia:") == false)
               writer write (curTitle + "\t" + curText + "\n")
-          }
 
     if (qName == "redirect")   redirect = true
-    else if (qName == "title") curTitle = curValue
-    else if (qName == "text")  curText  = curValue
+    else if (qName == "title") curTitle = curValue.toString
+    else if (qName == "text")  curText  = curValue.toString
+  }
+
+
+  private def cleanup() {
+    writer flush()
+    writer close()
   }
 }
