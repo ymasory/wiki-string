@@ -4,7 +4,8 @@ import org.xml.sax.helpers.XMLReaderFactory
 
 object Main {
 
-  val fileLoc = "/media/backup/wikipedia/enwiki-latest-pages-articles.xml"
+  // val fileLoc = "/media/backup/wikipedia/enwiki-latest-pages-articles.xml"
+  val fileLoc = "/media/backup/wikipedia/wikitravel-14-june-2010.xml"
   val outLoc  = "/media/backup/wikipedia/transform"
   val parserName = "org.apache.xerces.parsers.SAXParser"
 
