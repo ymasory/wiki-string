@@ -34,9 +34,11 @@ libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) =>
 
 //only uncomment if you need dependencies from the snapshots repo
 //resolvers += ScalaToolsSnapshots
+resolvers += "gwtwiki" at "http://gwtwiki.googlecode.com/svn/maven-repository/"
 
 //JAVA DEPENDENCIES
 libraryDependencies ++= Seq (
+  "info.bliki.wiki" % "bliki-core" % "3.0.16"
 )
 
 //SBT BEHAVIOR

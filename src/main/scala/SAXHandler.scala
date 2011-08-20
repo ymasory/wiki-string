@@ -1,5 +1,9 @@
 package com.yuvimasory.offpedia
 
+import info.bliki.wiki.filter.Encoder
+import info.bliki.wiki.filter.PlainTextConverter
+import info.bliki.wiki.model.WikiModel
+
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
 
@@ -7,17 +11,17 @@ import org.xml.sax.helpers.DefaultHandler
 //A Wikipedia English dump is 32+ GB
 object SAXHandler extends DefaultHandler {
 
-  //START DEBUG
+  //--------- START DEBUG
   var tagCount = 0
   // var maxTags  = 10000000
   var maxTags  = Integer.MAX_VALUE
-  //END DEBUG
+  //--------- END DEBUG
 
   var writer =
     new java.io.BufferedWriter(
       new java.io.FileWriter(
         new java.io.File(Main.outLoc)))
-    
+
 
   var curValue: StringBuffer  = null
 
@@ -30,17 +34,17 @@ object SAXHandler extends DefaultHandler {
 
   override def startElement(uri: String, lName: String, qName: String,
                             attrs: Attributes) {
-    //START DEBUG
+    //--------- START DEBUG
     tagCount += 1
     if (tagCount > maxTags) {
       println(tagCount + " tags reached")
       cleanup()
       sys.exit(0)
     }
-    //END DEBUG
-    
+    //--------- END DEBUG
+
     if (qName == "page") redirect = false
-    if (qName == "title" || qName == "text") curValue = new StringBuffer 
+    if (qName == "title" || qName == "text") curValue = new StringBuffer
   }
 
 
@@ -53,8 +57,12 @@ object SAXHandler extends DefaultHandler {
       if (redirect == false)
         if (curTitle != null)
           if (curText != null)
-            if (keepTitle(curTitle) && keepText(curText))
-              writer write (curTitle + "\t" + curText + "\n")
+            if (keepTitle(curTitle) && keepText(curText)) {
+              val transText = wiki2html(curText)
+              writer write (curTitle + "\t" + transText)
+              cleanup()
+              sys.exit()
+            }
 
     if (qName == "redirect")   redirect = true
     else if (qName == "title") curTitle = curValue.toString
@@ -62,10 +70,27 @@ object SAXHandler extends DefaultHandler {
   }
 
 
+  private def encode(str: String) = Encoder.encodeHtml(str)
+
+
+  private def wiki2text(wiki: String) = {
+    val model = new WikiModel("", "")
+    model.render(new PlainTextConverter(), wiki)
+  }
+
+
+  private def wiki2html(wiki: String) = {
+    val model = new WikiModel("", "")
+    model render wiki
+  }
+
+
   private def keepTitle(title: String) =
     title.startsWith("Wikipedia:") == false
 
+
   private def keepText(text: String) = true
+
 
   private def cleanup() {
     writer flush()
