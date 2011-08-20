@@ -53,7 +53,7 @@ object SAXHandler extends DefaultHandler {
       if (redirect == false)
         if (curTitle != null)
           if (curText != null)
-            if (curTitle.startsWith("Wikipedia:") == false)
+            if (keepTitle(curTitle) && keepText(curText))
               writer write (curTitle + "\t" + curText + "\n")
 
     if (qName == "redirect")   redirect = true
@@ -61,6 +61,11 @@ object SAXHandler extends DefaultHandler {
     else if (qName == "text")  curText  = curValue.toString
   }
 
+
+  private def keepTitle(title: String) =
+    title.startsWith("Wikipedia:") == false
+
+  private def keepText(text: String) = true
 
   private def cleanup() {
     writer flush()
