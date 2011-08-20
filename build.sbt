@@ -37,7 +37,6 @@ libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) =>
 
 //JAVA DEPENDENCIES
 libraryDependencies ++= Seq (
-  //"com.martiansoftware" % "jsap" % "2.1"
 )
 
 //SBT BEHAVIOR
