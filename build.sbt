@@ -1,91 +1,114 @@
-//BASIC PROJECT INFO
-name := "offpedia"
+/* basic project info */
+name := "wiki-string"
 
 organization := "com.yuvimasory"
 
-version := "alpha"
+version := "0.1.0-SNAPSHOT"
 
-//SCALA VERSIONS AND OPTIONS
-scalaVersion := "2.9.0-1"
+description := "parse wikipedia dumps"
 
-crossScalaVersions := Seq("2.9.0-1", "2.9.0", "2.8.1", "2.8.0")
+homepage := Some(url("https://github.com/ymasory/wiki-string"))
+
+startYear := Some(2011)
+
+licenses := Seq(
+  ("GPLv3", url("http://www.gnu.org/licenses/gpl-3.0.txt"))
+)
+
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/ymasory/wiki-string"),
+    "scm:git:https://github.com/ymasory/wiki-string.git",
+    Some("scm:git:git@github.com:ymasory/wiki-string.git")
+  )
+)
+
+/* scala versions and options */
+scalaVersion := "2.10.0-RC3"
+
+offline := false
 
 scalacOptions ++= Seq("-deprecation", "-unchecked")
 
-javacOptions ++= Seq("-Xlint:unchecked")
+javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
 
-//ENTRY POINT
-mainClass in (Compile, packageBin) := Some("com.yuvimasory.offpedia.Main")
-
-mainClass in (Compile, run) := Some("com.yuvimasory.offpedia.Main")
-
-//SCALA DEPENDENCIES
-libraryDependencies <<= (scalaVersion, libraryDependencies) { (sv, deps) =>
-  val scalaCheckVersionMap = Map("2.8.0"   -> ("scalacheck_2.8.0",   "1.7"),
-                                 "2.8.1"   -> ("scalacheck_2.8.1",   "1.8"),
-                                 "2.9.0"   -> ("scalacheck_2.9.0",   "1.8"),
-                                 "2.9.0-1" -> ("scalacheck_2.9.0-1", "1.9"))
-  val (scalaCheckArtifact, scalaCheckVersion) = scalaCheckVersionMap.getOrElse(
-    sv, error("Unsupported Scala version: " + scalaVersion)
-  )
-  deps :+ ("org.scala-tools.testing" % scalaCheckArtifact %
-           scalaCheckVersion % "test")
-}
-
-//only uncomment if you need dependencies from the snapshots repo
-//resolvers += ScalaToolsSnapshots
-resolvers += "gwtwiki" at "http://gwtwiki.googlecode.com/svn/maven-repository/"
-
-//JAVA DEPENDENCIES
+/* dependencies */
 libraryDependencies ++= Seq (
-  "info.bliki.wiki" % "bliki-core" % "3.0.16"
+  // -- lang --
+  // "org.apache.commons" % "commons-lang3" % "3.1",
+  // "org.scalaz" %% "scalaz-core" % "7.0.0-M4",
+  // "org.scalaz" %% "scalaz-effect" % "7.0.0-M4",
+  // "joda-time" % "joda-time" % "2.1",
+  // -- collections --
+  // "org.scalaj" %% "scalaj-collection" % "1.2",
+  // "com.google.guava" % "guava" % "13.0.1",
+  // "com.chuusai" %% "shapeless" % "1.2.2",
+  // -- io --
+  // "commons-io" % "commons-io" % "2.4",
+  // "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.1-seq",
+  // "com.github.scala-incubator.io" %% "scala-io-file" % "0.4.1-seq",
+  // -- logging & configuration --
+  "org.clapper" %% "grizzled-slf4j" % "1.0.1"
+  // "ch.qos.logback" % "logback-classic" % "1.0.7",
+  // "com.typesafe" % "config" % "1.0.0", //(also included in akka-actor)
+  // -- persistence & serialization --
+  // "org.json4s" %% "json4s-native" % "3.0.0",
+  // "com.novus" %% "salat" % "1.9.2-SNAPSHOT",
+  // "com.typesafe.akka" % "akka-actor" % "2.0.3",
+  // "com.h2database" % "h2" % "1.2.127",
+  // "mysql" % "mysql-connector-java" % "5.1.10",
+  // -- concurrency --
+  // "com.typesafe.akka" % "akka-actor" % "2.0.3",
+  // "org.scala-stm" %% "scala-stm" % "0.6",
+  // -- network --
+  //  "net.databinder.dispatch" %% "dispatch-core" % "0.9.2",
+  // -- testing --
+  // "org.scalacheck" %% "scalacheck" % "1.10.0" % "test",
+  // "org.specs2" %% "specs2" % "1.12.2" % "test",
+  // "org.scalatest" %% "scalatest" % "2.0.M4" % "test"
 )
 
-//SBT BEHAVIOR
-fork in Test := true
+/* you may need these repos */
+resolvers ++= Seq(
+  // Resolver.sonatypeRepo("snapshots")
+  // Resolver.typesafeIvyRepo("snapshots")
+  // Resolver.typesafeIvyRepo("releases")
+  // Resolver.typesafeRepo("releases")
+  // Resolver.typesafeRepo("snapshots")
+  // JavaNet2Repository,
+  // JavaNet1Repository
+)
 
-fork in Compile := true
-
-logLevel := Level.Info //higher than Info suppresses your own printlns
+/* sbt behavior */
+logLevel in compile := Level.Warn
 
 traceLevel := 5
 
-//PROGUARD
-seq(ProguardPlugin.proguardSettings :_*)
-
-proguardOptions ++= Seq (
-    "-dontshrink -dontoptimize -dontobfuscate -dontpreverify -dontnote " +
-    "-ignorewarnings",
-    keepAllScala
-)
-
-
-//PUBLISHING
-
-//this results in warnings if the listed file doesn't exist
-// credentials += Credentials(Path.userHome / ".scala-tools")
-
-publishTo <<= version {(v: String) =>
-    val nexus = "http://nexus.scala-tools.org/content/repositories/"
-    if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "snapshots/") 
-    else                             Some("releases"  at nexus + "releases/")
-}
-
+/* publishing */
 publishMavenStyle := true
 
-publishArtifact in (Test, packageBin) := false
+publishTo <<= version { (v: String) =>
+  val nexus = "https://oss.sonatype.org/"
+  if (v.trim.endsWith("SNAPSHOT")) Some(
+    "snapshots" at nexus + "content/repositories/snapshots"
+  )
+  else Some("releases" at nexus + "service/local/staging/deploy/maven2")
+                      }
 
-publishArtifact in (Compile, packageDoc):= false
+publishArtifact in Test := false
 
-publishArtifact in (Compile, packageSrc):= false
+pomIncludeRepository := { _ => false }
 
+pomExtra := (
+  <developers>
+    <developer>
+      <id>ymasory</id>
+      <name>Yuvi Masory</name>
+      <email>ymasory@gmail.com</email>
+      <url>http://yuvimasory.com</url>
+    </developer>
+  </developers>
+)
 
-//UNPORTED FROM 0.7.x prototype
-// extraResources = "README.rst" +++ "LICENSE"
-// mainResources = super.mainResources +++ extraResources
-
-// override def documentOptions =
-//   LinkSource ::
-//   documentTitle(name + " " + version + " API") ::
-//   windowTitle(name + " " + version + " API") ::
-//   Nil
+// Josh Suereth's step-by-step guide to publishing on sonatype
+// httpcom://www.scala-sbt.org/using_sonatype.html

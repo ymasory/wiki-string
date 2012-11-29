@@ -1,21 +1,28 @@
-package com.yuvimasory.offpedia
+package com.yuvimasory.wikistring
 
 import org.xml.sax.helpers.XMLReaderFactory
 
 object Main {
 
-  // val fileLoc = "/media/backup/wikipedia/enwiki-latest-pages-articles.xml"
-  val fileLoc = "/media/backup/wikipedia/wikitravel-14-june-2010.xml"
-  val outLoc  = "/media/backup/wikipedia/transform"
-  val parserName = "org.apache.xerces.parsers.SAXParser"
+  private[this] val Parser = "org.apache.xerces.parsers.SAXParser"
 
-  def main(args: Array[String]) {
-    System setProperty ("javax.xml.parsers.SAXParserFactory", parserName)
+  def vmain(args: Vector[String]) {
+    if (args.length != 2) {
+      Console.err println "usage: Main [enwiki-XXX-pages-articles.xml] [output]"
+      Console.err println()
+      sys exit 1
+    }
+    val Vector(in, out) = args
+    System setProperty ("javax.xml.parsers.SAXParserFactory", Parser)
     val reader = XMLReaderFactory.createXMLReader
-    val actualParserName = reader.getClass.getName
-    assert(parserName == actualParserName,
-           "using unexpected parser: " + actualParserName)
-    reader setContentHandler SAXHandler
-    reader parse fileLoc
+    val actualParser = reader.getClass.getName
+    assert(
+      Parser == actualParser,
+      s"using unexpected parser: $actualParser"
+    )
+    reader setContentHandler Handler
+    reader parse in
   }
+
+  def main(args: Array[String]) = vmain(Vector.empty ++ args)
 }
