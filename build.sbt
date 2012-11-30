@@ -34,6 +34,8 @@ javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
 
 /* dependencies */
 libraryDependencies ++= Seq (
+  "org.clapper" %% "grizzled-slf4j" % "1.0.1",
+  "xerces" % "xercesImpl" % "2.10.0"
   // -- lang --
   // "org.apache.commons" % "commons-lang3" % "3.1",
   // "org.scalaz" %% "scalaz-core" % "7.0.0-M4",
@@ -48,7 +50,6 @@ libraryDependencies ++= Seq (
   // "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.1-seq",
   // "com.github.scala-incubator.io" %% "scala-io-file" % "0.4.1-seq",
   // -- logging & configuration --
-  "org.clapper" %% "grizzled-slf4j" % "1.0.1"
   // "ch.qos.logback" % "logback-classic" % "1.0.7",
   // "com.typesafe" % "config" % "1.0.0", //(also included in akka-actor)
   // -- persistence & serialization --
