@@ -24,11 +24,15 @@ scmInfo := Some(
 )
 
 /* scala versions and options */
-scalaVersion := "2.10.0-RC3"
+scalaVersion := "2.10.0"
 
 offline := false
 
-scalacOptions ++= Seq("-deprecation", "-unchecked")
+scalacOptions ++= Seq(
+  "-feature",
+  "-deprecation",
+  "-unchecked"
+)
 
 javacOptions ++= Seq("-Xlint:unchecked", "-Xlint:deprecation")
 
@@ -94,7 +98,7 @@ publishTo <<= version { (v: String) =>
     "snapshots" at nexus + "content/repositories/snapshots"
   )
   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-                      }
+}
 
 publishArtifact in Test := false
 
